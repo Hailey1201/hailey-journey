@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hailey Shen — Interactive Journey & Adventure Map</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Nunito:wght@400;600;700;800&family=Space+Grotesk:wght@700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header / Game HUD Banner -->
+  <header class="hud-header">
+    <div class="banner-title-card">
+      <div class="banner-tag">ADVENTURE MAP & PORTFOLIO</div>
+      <h1 class="main-title">HAILEY SHEN — TECH PM & ADVENTURER</h1>
+      <p class="subtitle">Political Science Undergrad ➔ 5 Yrs Hardware PM @ Quanta ➔ NYU MOT ➔ Big Tech Horizon</p>
+    </div>
+
+    <div class="hud-controls">
+      <button id="btn-story-mode" class="hud-btn primary-hud-btn" title="Watch guided story tour">
+        <span class="icon">✨</span> Play Story Tour
+      </button>
+      <button id="btn-interest-shop" class="hud-btn" title="Visit Woody & Interest Outpost">
+        <span class="icon">🏕️</span> Woody's & Hobbies Outpost
+      </button>
+      <button id="btn-card" class="hud-btn" title="View Business Card / Contact">
+        <span class="icon">💼</span> Business Card
+      </button>
+      <button id="btn-sound" class="hud-btn icon-only-btn" title="Toggle Sound FX">
+        <span id="sound-icon">🔊</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Interactive Map Viewport -->
+  <main class="map-viewport" id="map-viewport">
+    <div class="game-instructions-toast" id="toast-hint">
+      <span>💡 <strong>Click along the road</strong> or click any landmark / store! Hailey walks strictly along the road to each destination.</span>
+      <button class="toast-close" id="close-toast">&times;</button>
+    </div>
+
+    <!-- The Game Canvas (cursor: pointer / pointing finger) -->
+    <canvas id="game-canvas"></canvas>
+
+    <!-- Crystal-Clear Floating Speech Bubble (HTML Overlay for 100% crisp text) -->
+    <div id="hailey-speech-bubble" class="hailey-speech-bubble" style="display: none;">
+      <span id="hailey-bubble-text"></span>
+      <div class="bubble-arrow"></div>
+    </div>
+
+    <!-- Compass Rose in bottom left -->
+    <div class="compass-rose" id="compass-rose">
+      <svg viewBox="0 0 100 100" width="80" height="80">
+        <circle cx="50" cy="50" r="42" fill="none" stroke="#2c2c2c" stroke-width="2" stroke-dasharray="3,3"/>
+        <circle cx="50" cy="50" r="36" fill="none" stroke="#2c2c2c" stroke-width="1.5"/>
+        <polygon points="50,10 54,46 50,42 46,46" fill="#D34B37"/>
+        <polygon points="50,90 54,54 50,58 46,54" fill="#2c2c2c"/>
+        <polygon points="10,50 46,46 42,50 46,54" fill="#2c2c2c"/>
+        <polygon points="90,50 54,46 58,50 54,54" fill="#2c2c2c"/>
+        <text x="50" y="8" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-weight="bold" font-size="9" fill="#2c2c2c">N</text>
+        <text x="96" y="53" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-weight="bold" font-size="9" fill="#2c2c2c">E</text>
+        <text x="50" y="99" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-weight="bold" font-size="9" fill="#2c2c2c">S</text>
+        <text x="4" y="53" text-anchor="middle" font-family="'Space Grotesk', sans-serif" font-weight="bold" font-size="9" fill="#2c2c2c">W</text>
+        <circle cx="50" cy="50" r="4" fill="#2c2c2c"/>
+      </svg>
+    </div>
+
+    <!-- Floating Quick Jump Milestone Pills -->
+    <div class="milestone-tray">
+      <div class="milestone-pill" data-target="start">1. Origins</div>
+      <div class="milestone-pill" data-target="poli_hall">2. Poli Sci Undergrad</div>
+      <div class="milestone-pill" data-target="intersection">3. Crossroads</div>
+      <div class="milestone-pill" data-target="quanta">4. Quanta PM (5 Yrs)</div>
+      <div class="milestone-pill" data-target="nyu">5. NYU MOT</div>
+      <div class="milestone-pill gold-pill" data-target="bigtech">6. Big Tech PM Horizon ✨</div>
+      <div class="milestone-pill highlight-pill" data-target="store">⛺ Woody's & Hobbies Outpost 🦮</div>
+    </div>
+  </main>
+
+  <!-- MODAL 1: The Interest & Hobbies Store Modal (Woody, Hiking, Scuba, Snowboard) -->
+  <div class="game-modal" id="modal-interests" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card store-modal-card">
+      <button class="modal-close-btn" data-close>&times;</button>
+      
+      <div class="store-header">
+        <div class="store-awning">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="store-signboard">
+          <span class="store-icon">🏕️</span>
+          <div>
+            <h2>WOODY'S & HAILEY'S INTEREST OUTPOST</h2>
+            <p>Golden Retriever Woody & Outdoor Adventures</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="store-tabs">
+        <button class="tab-btn active" data-tab="woody">🐶 Woody (Golden Retriever)</button>
+        <button class="tab-btn" data-tab="hiking">🥾 Hiking</button>
+        <button class="tab-btn" data-tab="scuba">🤿 Scuba Diving</button>
+        <button class="tab-btn" data-tab="snowboard">🏂 Snowboarding</button>
+      </div>
+
+      <div class="store-tab-content">
+        <!-- Woody Tab -->
+        <div class="tab-panel active" id="tab-woody">
+          <div class="interest-hero-grid">
+            <div class="photo-gallery-stack">
+              <div class="real-photo-card main-photo">
+                <img src="images/woody1.jpg" alt="Woody with big happy smile" class="hobby-real-img" />
+                <span class="photo-label">Woody's Big Smile!</span>
+              </div>
+              <div class="real-photo-card sub-photo">
+                <img src="images/woody2.jpg" alt="Woody in the park grass" class="hobby-real-img" />
+                <span class="photo-label">Park Sunshine</span>
+              </div>
+            </div>
+            <div class="interest-info-box">
+              <div class="badge-status">Sweetheart Back Home ❤️</div>
+              <h3>Meet Woody! (2 Years Old)</h3>
+              <p class="interest-quote">"Always cheering me on across the ocean with endless tail wags, radiant smiles, and pure golden sunshine energy!"</p>
+              <div class="interest-details-list">
+                <div class="detail-item"><strong>Name:</strong> Woody 🐾</div>
+                <div class="detail-item"><strong>Breed & Age:</strong> Golden Retriever, 2 Years Old</div>
+                <div class="detail-item"><strong>Current Location:</strong> Back home, staying spoiled and loved!</div>
+                <div class="detail-item"><strong>Special Talents:</strong> Olympic-grade tongue extension & FaceTime support</div>
+              </div>
+              <p class="interest-body">Woody is my faithful golden best friend. Whenever graduate studies or hardware PM deadlines get intense, a quick video call with Woody instantly recharges my spirit.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hiking Tab -->
+        <div class="tab-panel" id="tab-hiking">
+          <div class="interest-hero-grid">
+            <div class="real-photo-card single-large-photo">
+              <img src="images/hike.jpg" alt="Hailey hiking over alpine crater lake" class="hobby-real-img" />
+              <span class="photo-label">Alpine Ridge & Crater Lake</span>
+            </div>
+            <div class="interest-info-box">
+              <div class="badge-status">Mountain Trails & Ridge Lines</div>
+              <h3>Hiking & High-Altitude Trails</h3>
+              <p class="interest-quote">"The best clarity on complex hardware architectures and product strategies arrives after summiting a steep mountain ridge."</p>
+              <p class="interest-body">Exploring high alpine ridges, dramatic crater lakes, and remote wilderness trails. Hiking teaches patience, resilience, and the grit needed to navigate tough climbs—both on the trail and in high-stakes product launches.</p>
+              <div class="pill-tags">
+                <span class="tag">Ridge Scrambles</span>
+                <span class="tag">Alpine Lakes</span>
+                <span class="tag">Patience & Grit</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scuba Tab -->
+        <div class="tab-panel" id="tab-scuba">
+          <div class="interest-hero-grid">
+            <div class="real-photo-card single-large-photo">
+              <img src="images/scuba.jpg" alt="Scuba diving gear on boat in open blue waters" class="hobby-real-img" />
+              <span class="photo-label">Open Ocean Dive Boat</span>
+            </div>
+            <div class="interest-info-box">
+              <div class="badge-status">Ocean Exploration & Deep Blue</div>
+              <h3>Scuba Diving</h3>
+              <p class="interest-quote">"Submerging beneath the waves brings total silence and awe for an entirely different dimension of our planet."</p>
+              <p class="interest-body">Certified diver passionate about underwater exploration, marine habitats, and the meditative focus that comes with neutral buoyancy and breathing in rhythm with the ocean.</p>
+              <div class="pill-tags">
+                <span class="tag">Open Water</span>
+                <span class="tag">Deep Blue Calm</span>
+                <span class="tag">Marine Exploration</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Snowboard Tab -->
+        <div class="tab-panel" id="tab-snowboard">
+          <div class="interest-hero-grid">
+            <div class="real-photo-card single-large-photo">
+              <img src="images/snowboard.jpg" alt="Hailey with snowboard above sea of clouds" class="hobby-real-img" />
+              <span class="photo-label">Alpine Cloud Sea & Fresh Powder</span>
+            </div>
+            <div class="interest-info-box">
+              <div class="badge-status">Alpine Adrenaline</div>
+              <h3>Snowboarding</h3>
+              <p class="interest-quote">"Standing high above a sea of clouds before carving down alpine descents is pure freedom."</p>
+              <p class="interest-body">When winter arrives, you’ll find me on snowy peaks chasing fresh powder, perfecting edge carves, and taking in breathtaking mountain cloud inversions.</p>
+              <div class="pill-tags">
+                <span class="tag">Powder Turns</span>
+                <span class="tag">Alpine Cloud Sea</span>
+                <span class="tag">Speed & Flow</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Store Modal Continue / Close Action -->
+      <div style="display: flex; justify-content: center; padding: 16px 24px; border-top: 2px solid #EAE0D5; background: #FFFBF7;">
+        <button id="btn-store-continue" class="hud-btn primary-hud-btn" data-close>Continue Journey ➔</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: Milestone / Landmark Detail Popups -->
+  <div class="game-modal" id="modal-milestone" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card landmark-modal-card">
+      <button class="modal-close-btn" data-close>&times;</button>
+      <div class="landmark-badge-icon" id="lm-icon">🏛️</div>
+      <div class="landmark-stage-label" id="lm-stage">MILESTONE</div>
+      <h2 id="lm-title">Landmark Title</h2>
+      <div class="landmark-subtitle" id="lm-subtitle">Subtitle</div>
+      <div class="landmark-divider"></div>
+      <p id="lm-description" class="landmark-desc">Description text...</p>
+      
+      <div class="landmark-meta-highlights" id="lm-highlights"></div>
+
+      <div class="modal-actions">
+        <button id="btn-milestone-continue" class="hud-btn primary-hud-btn" data-close>Continue Journey ➔</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 3: Business Card / Contact Modal -->
+  <div class="game-modal" id="modal-card" aria-hidden="true">
+    <div class="modal-backdrop"></div>
+    <div class="modal-card business-card-modal">
+      <button class="modal-close-btn" data-close>&times;</button>
+      
+      <div class="b-card-inner">
+        <div class="b-card-left">
+          <div class="b-avatar-photo">
+            <img src="images/avatar.jpg" alt="Hailey Shen" class="avatar-img" />
+          </div>
+          <div class="b-status-pill">● Available for Tech PM Roles</div>
+        </div>
+        <div class="b-card-right">
+          <h2 class="b-name">Hailey Shen</h2>
+          <div class="b-title">Tech Product Manager & Adventurer</div>
+          <div class="b-institution">NYU Management of Technology • Ex-Quanta PM (5 Years)</div>
+          
+          <p class="b-summary">
+            Product leader bridging high-volume laptop manufacturing, cross-functional engineering execution, and technology innovation. Moving from Political Science foundations to 5 years of hardware leadership at Quanta, NYU MOT, and towards Big Tech product management.
+          </p>
+
+          <div class="b-metrics-row">
+            <div class="b-metric">
+              <span class="m-num">5 Yrs</span>
+              <span class="m-lbl">Hardware PM</span>
+            </div>
+            <div class="b-metric">
+              <span class="m-num">NYU</span>
+              <span class="m-lbl">M.S. MOT</span>
+            </div>
+            <div class="b-metric">
+              <span class="m-num">Woody 🦮</span>
+              <span class="m-lbl">Golden Best Friend</span>
+            </div>
+          </div>
+
+          <div class="b-contact-actions">
+            <a href="mailto:cs6378@nyu.edu" class="b-btn b-btn-primary">✉️ cs6378@nyu.edu</a>
+            <a href="https://www.linkedin.com/in/chunpeng-shen-80a276177" target="_blank" rel="noopener" class="b-btn">🔗 LinkedIn Profile</a>
+            <a href="mailto:cs6378@nyu.edu?subject=Resume%20Request%20-%20Hailey%20Shen" class="b-btn">📄 Request Resume</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,868 @@
+/* ==========================================================================
+   Hailey Shen — Interactive Journey Map Portfolio Stylesheet
+   Vibe: Outdoor Adventure, Community Map, Game Aesthetic
+   ========================================================================== */
+
+:root {
+  --bg-peach: #F6A99A;
+  --bg-ground: #FBE6D6;
+  --bg-trail: #FFFDF9;
+  --path-dash: #3A322D;
+  --forest-green: #3B6E52;
+  --forest-light: #528E6E;
+  --water-blue: #5EBEC4;
+  --water-deep: #439EAE;
+  --nyu-violet: #57068C;
+  --nyu-violet-light: #7E22CE;
+  --wood-brown: #8D5B38;
+  --brick-red: #D9534F;
+  --warm-gold: #F5A623;
+  --text-dark: #2B2625;
+  --text-muted: #6B625E;
+  --card-bg: #FFFFFF;
+  --radius-lg: 20px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --shadow-warm: 0 12px 30px rgba(78, 48, 38, 0.15);
+  --shadow-pop: 4px 4px 0px #2B2625;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-peach);
+  color: var(--text-dark);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* ==========================================================================
+   HUD Header & Retro Banner
+   ========================================================================== */
+.hud-header {
+  background: #FFFBF7;
+  border-bottom: 3.5px solid var(--text-dark);
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.06);
+  z-index: 20;
+}
+
+.banner-title-card {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.banner-tag {
+  align-self: flex-start;
+  background: var(--text-dark);
+  color: #FFF;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.main-title {
+  font-family: 'Fredoka', 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.25rem;
+  color: var(--text-dark);
+  letter-spacing: 0.5px;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.hud-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hud-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #FFFFFF;
+  color: var(--text-dark);
+  border: 2px solid var(--text-dark);
+  border-radius: var(--radius-sm);
+  padding: 8px 14px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  box-shadow: 2.5px 2.5px 0 var(--text-dark);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background 0.15s ease;
+}
+
+.hud-btn:hover {
+  transform: translate(-1.5px, -1.5px);
+  box-shadow: 4px 4px 0 var(--text-dark);
+  background: #FFF9F2;
+}
+
+.hud-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--text-dark);
+}
+
+.primary-hud-btn {
+  background: #FFE27A;
+}
+
+.primary-hud-btn:hover {
+  background: #FFDA5C;
+}
+
+.icon-only-btn {
+  padding: 8px 10px;
+  font-size: 1rem;
+}
+
+/* ==========================================================================
+   Map Viewport & Canvas Area
+   ========================================================================== */
+.map-viewport {
+  flex: 1;
+  position: relative;
+  background-color: var(--bg-peach);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+/* 2. Cursor is now ALWAYS a pointing finger pointer! */
+#game-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: pointer !important;
+}
+
+/* Crystal-Clear Speech Bubble Overlay (Never blurry, perfectly crisp) */
+.hailey-speech-bubble {
+  position: absolute;
+  transform: translate(-50%, -100%);
+  background: #FFFFFF;
+  border: 2.5px solid var(--text-dark);
+  box-shadow: 3.5px 3.5px 0 var(--text-dark);
+  border-radius: 14px;
+  padding: 8px 16px;
+  font-family: 'Fredoka', 'Nunito', -apple-system, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text-dark);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 25;
+  line-height: 1.3;
+  animation: popIn 0.2s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+.hailey-speech-bubble .bubble-arrow {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid var(--text-dark);
+}
+
+.hailey-speech-bubble .bubble-arrow::after {
+  content: '';
+  position: absolute;
+  bottom: 2.5px;
+  left: -6px;
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #FFFFFF;
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: translate(-50%, -85%) scale(0.9); }
+  to { opacity: 1; transform: translate(-50%, -100%) scale(1); }
+}
+
+/* Toast Hint */
+.game-instructions-toast {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(8px);
+  border: 2px solid var(--text-dark);
+  box-shadow: 3px 3px 0 var(--text-dark);
+  border-radius: 30px;
+  padding: 8px 18px;
+  font-size: 0.88rem;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  z-index: 10;
+  animation: fadeInDown 0.4s ease-out;
+}
+
+.toast-close {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  line-height: 1;
+}
+
+/* Compass Rose in Corner */
+.compass-rose {
+  position: absolute;
+  bottom: 24px;
+  left: 24px;
+  pointer-events: none;
+  background: rgba(255, 255, 255, 0.85);
+  padding: 8px;
+  border-radius: 50%;
+  border: 2.5px solid var(--text-dark);
+  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.15);
+  z-index: 5;
+}
+
+/* Milestone Pill Tray */
+.milestone-tray {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(8px);
+  border: 2.5px solid var(--text-dark);
+  border-radius: 40px;
+  box-shadow: 4px 4px 0 var(--text-dark);
+  display: flex;
+  gap: 6px;
+  padding: 6px 8px;
+  z-index: 10;
+  max-width: 95%;
+  overflow-x: auto;
+}
+
+.milestone-pill {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: var(--text-muted);
+  background: transparent;
+  white-space: nowrap;
+}
+
+.milestone-pill:hover {
+  background: #F4EAE1;
+  color: var(--text-dark);
+}
+
+.milestone-pill.active {
+  background: var(--text-dark);
+  color: #FFFFFF;
+}
+
+.gold-pill {
+  background: #FEF3C7;
+  color: #B45309;
+  border: 1.5px solid #F59E0B;
+}
+
+.gold-pill:hover {
+  background: #FDE68A;
+}
+
+.highlight-pill {
+  background: #FFF2CC;
+  color: #B45309;
+  border: 1.5px dashed #D97706;
+}
+
+.highlight-pill:hover {
+  background: #FFE8A3;
+  color: #78350F;
+}
+
+/* ==========================================================================
+   Modals Common System
+   ========================================================================== */
+.game-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.game-modal.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(43, 38, 37, 0.65);
+  backdrop-filter: blur(4px);
+}
+
+.modal-card {
+  position: relative;
+  background: #FFFFFF;
+  border: 3.5px solid var(--text-dark);
+  box-shadow: 8px 8px 0 var(--text-dark);
+  border-radius: var(--radius-lg);
+  max-width: 720px;
+  width: 92%;
+  max-height: 88vh;
+  overflow-y: auto;
+  z-index: 2;
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.25s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+
+.game-modal.is-open .modal-card {
+  transform: translateY(0) scale(1);
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  background: #FFF;
+  border: 2px solid var(--text-dark);
+  border-radius: 50%;
+  font-size: 1.3rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--text-dark);
+  z-index: 5;
+  transition: all 0.15s ease;
+}
+
+.modal-close-btn:hover {
+  background: #FFEAEA;
+  transform: scale(1.08);
+}
+
+/* ==========================================================================
+   Interest Store Modal Styles
+   ========================================================================== */
+.store-header {
+  background: #FFF9F2;
+  border-bottom: 3px solid var(--text-dark);
+  position: relative;
+}
+
+.store-awning {
+  display: flex;
+  height: 18px;
+  overflow: hidden;
+  border-bottom: 2px solid var(--text-dark);
+}
+
+.store-awning span {
+  flex: 1;
+  height: 100%;
+}
+
+.store-awning span:nth-child(odd) {
+  background: #E5533D;
+}
+
+.store-awning span:nth-child(even) {
+  background: #FFFFFF;
+}
+
+.store-signboard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 24px;
+}
+
+.store-icon {
+  font-size: 2.4rem;
+  background: #FFE8D6;
+  border: 2.5px solid var(--text-dark);
+  border-radius: 14px;
+  padding: 8px 12px;
+  box-shadow: 2.5px 2.5px 0 var(--text-dark);
+}
+
+.store-signboard h2 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.45rem;
+  color: var(--text-dark);
+}
+
+.store-signboard p {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.store-tabs {
+  display: flex;
+  overflow-x: auto;
+  gap: 8px;
+  padding: 12px 24px;
+  background: #FAF6F0;
+  border-bottom: 2px solid #EAE0D5;
+}
+
+.tab-btn {
+  background: #FFF;
+  border: 2px solid var(--text-dark);
+  border-radius: 20px;
+  padding: 7px 16px;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+  transition: all 0.15s ease;
+}
+
+.tab-btn:hover {
+  background: #FFF0E0;
+}
+
+.tab-btn.active {
+  background: var(--text-dark);
+  color: #FFFFFF;
+  box-shadow: 2px 2px 0 #555;
+}
+
+.store-tab-content {
+  padding: 24px;
+}
+
+.tab-panel {
+  display: none;
+  animation: fadeIn 0.25s ease;
+}
+
+.tab-panel.active {
+  display: block;
+}
+
+.interest-hero-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Photo Gallery Stack */
+.photo-gallery-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.real-photo-card {
+  position: relative;
+  border: 3px solid var(--text-dark);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: 4px 4px 0 var(--text-dark);
+  background: #FFF;
+}
+
+.hobby-real-img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+.single-large-photo .hobby-real-img {
+  height: 260px;
+}
+
+.photo-label {
+  display: block;
+  font-size: 0.76rem;
+  font-weight: 700;
+  background: #FFF;
+  border-top: 1.5px solid var(--text-dark);
+  padding: 4px 8px;
+  text-align: center;
+  color: var(--text-muted);
+}
+
+.badge-status {
+  display: inline-block;
+  background: #E8F5E9;
+  color: #2E7D32;
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+}
+
+.interest-info-box h3 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.45rem;
+  margin-bottom: 8px;
+}
+
+.interest-quote {
+  font-style: italic;
+  color: #5C4A3E;
+  background: #FAF0E6;
+  border-left: 3.5px solid #D97706;
+  padding: 8px 14px;
+  border-radius: 0 8px 8px 0;
+  margin-bottom: 14px;
+  font-size: 0.95rem;
+  line-height: 1.45;
+}
+
+.interest-body {
+  font-size: 0.95rem;
+  color: var(--text-dark);
+  line-height: 1.55;
+  margin-bottom: 16px;
+}
+
+.interest-details-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.9rem;
+  margin-bottom: 14px;
+}
+
+.pill-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag {
+  background: #F0F2F5;
+  border: 1px solid #D1D5DB;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 14px;
+}
+
+/* ==========================================================================
+   Landmark Modal Card
+   ========================================================================== */
+.landmark-modal-card {
+  padding: 32px 28px;
+  text-align: center;
+}
+
+.landmark-badge-icon {
+  font-size: 3.5rem;
+  margin-bottom: 8px;
+}
+
+.landmark-stage-label {
+  display: inline-block;
+  background: #EDE9FE;
+  color: #6D28D9;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+
+.landmark-modal-card h2 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.7rem;
+  margin-bottom: 4px;
+}
+
+.landmark-subtitle {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.landmark-divider {
+  width: 60px;
+  height: 3px;
+  background: #E5E7EB;
+  margin: 16px auto;
+  border-radius: 2px;
+}
+
+.landmark-desc {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #374151;
+  max-width: 540px;
+  margin: 0 auto 20px;
+}
+
+.landmark-meta-highlights {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.highlight-box {
+  background: #F9FAFB;
+  border: 2px solid #E5E7EB;
+  border-radius: 12px;
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-align: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.highlight-lbl {
+  display: block;
+  font-size: 0.76rem;
+  color: #6B7280;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  line-height: 1.2;
+}
+
+.highlight-val {
+  display: block;
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #1F2937;
+  line-height: 1.35;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   Business Card Modal Styles
+   ========================================================================== */
+.business-card-modal {
+  padding: 32px;
+}
+
+.b-card-inner {
+  display: grid;
+  grid-template-columns: 190px 1fr;
+  gap: 28px;
+  align-items: center;
+}
+
+.b-card-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.b-avatar-photo {
+  width: 140px;
+  height: 140px;
+  border: 3.5px solid var(--text-dark);
+  border-radius: 50%;
+  overflow: hidden;
+  box-shadow: 4px 4px 0 var(--text-dark);
+  margin-bottom: 12px;
+  background: #FEF3C7;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.b-status-pill {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #047857;
+  background: #D1FAE5;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+.b-card-right h2 {
+  font-family: 'Fredoka', sans-serif;
+  font-size: 1.7rem;
+  margin-bottom: 2px;
+}
+
+.b-title {
+  color: var(--nyu-violet);
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 4px;
+}
+
+.b-institution {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.b-summary {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #4B5563;
+  margin-bottom: 18px;
+}
+
+.b-metrics-row {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.b-metric {
+  flex: 1;
+  background: #F3F4F6;
+  border: 2px solid #E5E7EB;
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+}
+
+.m-num {
+  display: block;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 700;
+  font-size: 1.15rem;
+  color: var(--text-dark);
+}
+
+.m-lbl {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.b-contact-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.b-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border: 2px solid var(--text-dark);
+  border-radius: 8px;
+  background: #FFF;
+  color: var(--text-dark);
+  text-decoration: none;
+  font-family: 'Fredoka', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  box-shadow: 2px 2px 0 var(--text-dark);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.b-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--text-dark);
+}
+
+.b-btn-primary {
+  background: var(--warm-gold);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translate(-50%, -10px); }
+  to { opacity: 1; transform: translate(-50%, 0); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hud-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 14px;
+  }
+  .hud-controls {
+    width: 100%;
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+  .milestone-tray {
+    width: 94%;
+    overflow-x: auto;
+    bottom: 10px;
+  }
+  .interest-hero-grid,
+  .b-card-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .compass-rose {
+    display: none;
+  }
+}
